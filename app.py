@@ -1,3 +1,5 @@
+import re
+
 import anthropic
 import streamlit as st
 from dotenv import load_dotenv
@@ -86,10 +88,10 @@ if st.button("Classify", type="primary"):
         output.markdown(full)
 
         # Badge
-        for sev, icon in SEV_COLORS.items():
-            if sev in full:
-                st.toast(f"{icon} {sev} classified", icon=None)
-                break
+        match = re.search(r"##\s*Severity:\s*(SEV[1-4])", full)
+        if match:
+            sev = match.group(1)
+            st.toast(f"{SEV_COLORS[sev]} {sev} classified", icon=None)
 
         st.session_state["last_result"] = full
         st.session_state.pop("input_text", None)
