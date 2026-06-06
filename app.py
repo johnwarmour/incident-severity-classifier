@@ -31,12 +31,18 @@ Respond in this exact format:
 """
 
 
+_client = anthropic.Anthropic()
+
+
 def classify(description: str):
-    client = anthropic.Anthropic()
-    with client.messages.stream(
+    with _client.messages.stream(
         model="claude-sonnet-4-6",
         max_tokens=512,
-        system=SYSTEM_PROMPT,
+        system=[{
+            "type": "text",
+            "text": SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral"},
+        }],
         messages=[{"role": "user", "content": description}],
     ) as stream:
         for text in stream.text_stream:
